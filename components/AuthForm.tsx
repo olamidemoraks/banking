@@ -1,27 +1,18 @@
 "use client";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { signIn, signUp } from "@/lib/actions/user.action";
+import { authFormSchema } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import CustomInput from "./CustomInput";
-import { authFormSchema } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
-import SignIn from "@/app/(auth)/sign-in/page";
 import { useRouter } from "next/navigation";
-import { signIn, signUp } from "@/lib/actions/user.action";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import CustomInput from "./CustomInput";
+import PlaidLink from "./PlaidLink";
 
 const AuthForm = ({ type }: { type: string }) => {
   const [user, setUser] = useState(null);
@@ -42,7 +33,19 @@ const AuthForm = ({ type }: { type: string }) => {
     setIsLoading(true);
     try {
       if (type === "sign-up") {
-        const newUser = await signUp(values);
+        const userData = {
+          firstName: values.firstName!,
+          lastName: values.lastName!,
+          address1: values.address1!,
+          city: values.city!,
+          state: values.state!,
+          dateOfBirth: values.dateOfBirth!,
+          ssn: values.ssn!,
+          postalCode: values.postalCode!,
+          email: values.email,
+          password: values.password,
+        };
+        const newUser = await signUp(userData);
         setUser(newUser);
       }
       if (type === "sign-in") {
@@ -88,7 +91,9 @@ const AuthForm = ({ type }: { type: string }) => {
         </div>
       </header>
       {user ? (
-        <div className="flex flex-col gap-4">{/* Padlink  */}</div>
+        <div className="flex flex-col gap-4">
+          <PlaidLink user={user} variant="primary" />
+        </div>
       ) : (
         <>
           <Form {...form}>
